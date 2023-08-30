@@ -1,24 +1,7 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-	"net/http"
-	"os"
-
-	"github.com/Valkiria/pkg/server"
-)
+import "github.com/Valkiria/pkg/server"
 
 func main() {
-	fmt.Println("Starting server...")
-	http.HandleFunc("/", server.GetRoot)
-	http.HandleFunc("/hello", server.GetHello)
-
-	err := http.ListenAndServe(":3333", nil)
-	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Printf("server closed :(\n)")
-	} else if err != nil {
-		fmt.Printf("error starting server: %s\n", err)
-		os.Exit(1)
-	}
+	server.StartServer()
 }
