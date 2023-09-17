@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/Valkiria/pkg/movie"
 )
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
@@ -25,30 +27,9 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 	genre := r.URL.Query().Get("genre")
 	resp := "Movie of today is "
 	w.WriteHeader(http.StatusOK)
-	var movie = "Matrix"
-	switch genre {
-	case "horror":
-		movie = "Saw"
-	case "comedy":
-		movie = "What happens in Vegas"
-	case "action":
-		movie = "Die Hard"
-	case "thriller":
-		movie = "The Silence of the Lambs"
-	case "drama":
-		movie = "The green mile"
-	case "fantasy":
-		movie = "The Lord of the Rings"
-	case "sci-fi":
-		movie = "The Matrix"
-	case "adventure":
-		movie = "The Hobbit"
-	case "western":
-		movie = "The Good, the Bad and the Ugly"
-	case "crime":
-		movie = "The Godfather"
-	}
-	io.WriteString(w, resp+movie+"\n")
+	pickedMovie := movie.PickMovie(genre)
+
+	io.WriteString(w, resp+pickedMovie+"\n")
 }
 
 func StartServer() {
