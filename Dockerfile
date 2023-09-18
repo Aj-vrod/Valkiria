@@ -13,7 +13,7 @@ RUN go mod download
 COPY . .
 
 # Build
-RUN go build -o /Valkiria
+RUN go build -o ./Valkiria
 
 # Run
 CMD ["./Valkiria"]
