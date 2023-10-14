@@ -7,7 +7,7 @@ var movies = []string{"Saw", "What happens in Vegas", "The green mile", "The Lor
 
 func TestPickMovie(t *testing.T) {
 	for i, v := range genres {
-		got := PickMovie(v)
+		got := pickMovie(v)
 		exp := movies[i]
 
 		if got != exp {

@@ -1,6 +1,12 @@
 package movie
 
-func PickMovie(genre string) string {
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func pickMovie(genre string) string {
 	var movie string = "Mamma Mia"
 	switch genre {
 	case "horror":
@@ -25,4 +31,14 @@ func PickMovie(genre string) string {
 		movie = "The Godfather"
 	}
 	return movie
+}
+
+func GetMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got /movie request\n")
+	genre := r.URL.Query().Get("genre")
+	resp := "Movie of today is "
+	w.WriteHeader(http.StatusOK)
+	pickedMovie := pickMovie(genre)
+
+	io.WriteString(w, resp+pickedMovie+"\n")
 }
