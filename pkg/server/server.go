@@ -12,12 +12,12 @@ import (
 )
 
 func StartServer() {
-	fmt.Println("Starting server...")
+	fmt.Println("Starting server. Listening on port 3000...")
 	http.HandleFunc("/", root.GetRoot)
 	http.HandleFunc("/hello", hello.GetHello)
 	http.HandleFunc("/movie", movie.GetMovie)
 
-	err := http.ListenAndServe(":3333", nil)
+	err := http.ListenAndServe(":3000", nil)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed :(\n)")
 	} else if err != nil {

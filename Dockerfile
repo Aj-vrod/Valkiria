@@ -17,3 +17,5 @@ RUN go build -o ./Valkiria
 
 # Run
 CMD ["./Valkiria"]
+
+EXPOSE 3000
