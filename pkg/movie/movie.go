@@ -34,11 +34,22 @@ func pickMovie(genre string) string {
 }
 
 func GetMovie(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got /movie request\n")
-	genre := r.URL.Query().Get("genre")
-	resp := "Movie of today is "
-	w.WriteHeader(http.StatusOK)
-	pickedMovie := pickMovie(genre)
+	switch r.Method {
+	case "GET":
+		fmt.Printf("GET /movie\n")
+		genre := r.URL.Query().Get("genre")
+		resp := "Movie of today is "
+		w.WriteHeader(http.StatusOK)
+		pickedMovie := pickMovie(genre)
 
-	io.WriteString(w, resp+pickedMovie+"\n")
+		io.WriteString(w, resp+pickedMovie+"\n")
+	case "POST":
+		fmt.Printf("POST /movie\n")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, "Thanks for adding movies\n")
+	case "DELETE":
+		fmt.Printf("DELETE /movie\n")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, "Deletion successful!\n")
+	}
 }
