@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
+
 	"github.com/Valkiria/pkg/hello"
 	"github.com/Valkiria/pkg/movie"
 	"github.com/Valkiria/pkg/root"
@@ -13,11 +15,15 @@ import (
 
 func StartServer() {
 	fmt.Println("Starting server. Listening on port 3000...")
-	http.HandleFunc("/", root.GetRoot)
-	http.HandleFunc("/hello", hello.GetHello)
-	http.HandleFunc("/movie", movie.GetMovie)
 
-	err := http.ListenAndServe(":3000", nil)
+	r := mux.NewRouter()
+	r.HandleFunc("/", root.HomeHandler).Methods("GET")
+	r.HandleFunc("/hello", hello.HelloHandler).Methods("GET")
+	r.HandleFunc("/movie/{genre:[a-z]+}", movie.GetMovieHandler).Methods("GET")
+	r.HandleFunc("/movie", movie.CreateMovieHandler).Methods("POST")
+	r.HandleFunc("/movie/{genre:[a-z]+}", movie.DeleteMovieHandler).Methods("DELETE")
+
+	err := http.ListenAndServe(":3000", r)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed :(\n)")
 	} else if err != nil {
