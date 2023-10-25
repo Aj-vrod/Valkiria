@@ -1,55 +1,93 @@
 package movie
 
 import (
-	"fmt"
-	"io"
+	"database/sql"
+	"encoding/json"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func pickMovie(genre string) string {
-	var movie string = "Mamma Mia"
-	switch genre {
-	case "horror":
-		movie = "Saw"
-	case "comedy":
-		movie = "What happens in Vegas"
-	case "action":
-		movie = "Die Hard"
-	case "thriller":
-		movie = "The Silence of the Lambs"
-	case "drama":
-		movie = "The green mile"
-	case "fantasy":
-		movie = "The Lord of the Rings"
-	case "sci-fi":
-		movie = "The Matrix"
-	case "adventure":
-		movie = "The Hobbit"
-	case "western":
-		movie = "The Good, the Bad and the Ugly"
-	case "crime":
-		movie = "The Godfather"
-	}
-	return movie
+var DB *sql.DB
+
+type movie struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Genre string `json:"genre"`
 }
 
-func GetMovie(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		fmt.Printf("GET /movie\n")
-		genre := r.URL.Query().Get("genre")
-		resp := "Movie of today is "
-		w.WriteHeader(http.StatusOK)
-		pickedMovie := pickMovie(genre)
+func respondeWithJSON(w http.ResponseWriter, code int, m interface{}) {
+	resp, _ := json.Marshal(m)
 
-		io.WriteString(w, resp+pickedMovie+"\n")
-	case "POST":
-		fmt.Printf("POST /movie\n")
-		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, "Thanks for adding movies\n")
-	case "DELETE":
-		fmt.Printf("DELETE /movie\n")
-		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, "Deletion successful!\n")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(resp)
+}
+
+func (m *movie) getProduct() error {
+	return DB.QueryRow("SELECT name, genre FROM movie WHERE genre = $1", m.Genre).Scan(&m.Name, &m.Genre)
+}
+
+func (m *movie) createProduct() error {
+	err := DB.QueryRow("INSERT INTO movie(name, genre) VALUES($1, $2) RETURNING id", m.Name, m.Genre).Scan(&m.ID)
+
+	return err
+}
+
+func (m *movie) deleteProduct() error {
+	_, err := DB.Exec("DELETE FROM movie WHERE genre = $1", m.Genre)
+
+	return err
+}
+
+func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	genre := vars["genre"]
+
+	var m movie
+	m.Genre = genre
+	if err := m.getProduct(); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			respondeWithJSON(w, http.StatusNotFound, "Movie not found")
+		default:
+			respondeWithJSON(w, http.StatusInternalServerError, err.Error())
+		}
+		return
 	}
+
+	respondeWithJSON(w, http.StatusOK, m)
+}
+
+func CreateMovieHandler(w http.ResponseWriter, r *http.Request) {
+	var m movie
+	decoder := json.NewDecoder(r.Body)
+
+	if err := decoder.Decode(&m); err != nil {
+		respondeWithJSON(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	if err := m.createProduct(); err != nil {
+		respondeWithJSON(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondeWithJSON(w, http.StatusCreated, m)
+
+}
+
+func DeleteMovieHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	genre := vars["genre"]
+
+	var m movie
+	m.Genre = genre
+
+	if err := m.deleteProduct(); err != nil {
+		respondeWithJSON(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondeWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
