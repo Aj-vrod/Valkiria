@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -25,7 +26,7 @@ func respondeWithJSON(w http.ResponseWriter, code int, m interface{}) {
 }
 
 func (m *movie) getProduct() error {
-	return DB.QueryRow("SELECT name, genre FROM movie WHERE genre = $1", m.Genre).Scan(&m.Name, &m.Genre)
+	return DB.QueryRow("SELECT name, genre FROM movie WHERE id = $1", m.ID).Scan(&m.Name, &m.Genre)
 }
 
 func (m *movie) createProduct() error {
@@ -35,17 +36,20 @@ func (m *movie) createProduct() error {
 }
 
 func (m *movie) deleteProduct() error {
-	_, err := DB.Exec("DELETE FROM movie WHERE genre = $1", m.Genre)
+	_, err := DB.Exec("DELETE FROM movie WHERE id = $1", m.ID)
 
 	return err
 }
 
 func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	genre := vars["genre"]
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		respondeWithJSON(w, http.StatusBadRequest, "Invalid product ID")
+	}
 
 	var m movie
-	m.Genre = genre
+	m.ID = id
 	if err := m.getProduct(); err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -79,10 +83,14 @@ func CreateMovieHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteMovieHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	genre := vars["genre"]
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		respondeWithJSON(w, http.StatusBadRequest, "Invalid product ID")
+		return
+	}
 
 	var m movie
-	m.Genre = genre
+	m.ID = id
 
 	if err := m.deleteProduct(); err != nil {
 		respondeWithJSON(w, http.StatusInternalServerError, err.Error())
