@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Valkiria/pkg/database"
 	"github.com/gorilla/mux"
 )
-
-var DB *sql.DB
 
 type movie struct {
 	ID    int    `json:"id"`
@@ -26,17 +25,17 @@ func respondeWithJSON(w http.ResponseWriter, code int, m interface{}) {
 }
 
 func (m *movie) getProduct() error {
-	return DB.QueryRow("SELECT name, genre FROM movie WHERE id = $1", m.ID).Scan(&m.Name, &m.Genre)
+	return database.DB.QueryRow("SELECT name, genre FROM movie WHERE id = $1", m.ID).Scan(&m.Name, &m.Genre)
 }
 
 func (m *movie) createProduct() error {
-	err := DB.QueryRow("INSERT INTO movie(name, genre) VALUES($1, $2) RETURNING id", m.Name, m.Genre).Scan(&m.ID)
+	err := database.DB.QueryRow("INSERT INTO movie(name, genre) VALUES($1, $2) RETURNING id", m.Name, m.Genre).Scan(&m.ID)
 
 	return err
 }
 
 func (m *movie) deleteProduct() error {
-	_, err := DB.Exec("DELETE FROM movie WHERE id = $1", m.ID)
+	_, err := database.DB.Exec("DELETE FROM movie WHERE id = $1", m.ID)
 
 	return err
 }
