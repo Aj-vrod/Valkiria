@@ -15,6 +15,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	defer database.DB.Close()
+
 	fmt.Println("Connected!")
 	server.StartServer()
 }
