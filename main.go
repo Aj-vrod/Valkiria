@@ -5,9 +5,7 @@ import (
 	"log"
 
 	"github.com/Valkiria/pkg/database"
-	"github.com/Valkiria/pkg/gui"
 	"github.com/Valkiria/pkg/server"
-	"github.com/getlantern/systray"
 	_ "github.com/lib/pq"
 )
 
@@ -18,8 +16,6 @@ func main() {
 	}
 
 	defer database.DB.Close()
-
-	systray.Run(gui.OnReady, gui.OnExit)
 
 	fmt.Println("Connected!")
 	server.StartServer()

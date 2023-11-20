@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type movie struct {
+type Movie struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Genre string `json:"genre"`
@@ -24,17 +24,17 @@ func respondeWithJSON(w http.ResponseWriter, code int, m interface{}) {
 	w.Write(resp)
 }
 
-func (m *movie) getProduct() error {
+func (m *Movie) getProduct() error {
 	return database.DB.QueryRow("SELECT name, genre FROM movie WHERE id = $1", m.ID).Scan(&m.Name, &m.Genre)
 }
 
-func (m *movie) createProduct() error {
+func (m *Movie) createProduct() error {
 	err := database.DB.QueryRow("INSERT INTO movie(name, genre) VALUES($1, $2) RETURNING id", m.Name, m.Genre).Scan(&m.ID)
 
 	return err
 }
 
-func (m *movie) deleteProduct() error {
+func (m *Movie) deleteProduct() error {
 	_, err := database.DB.Exec("DELETE FROM movie WHERE id = $1", m.ID)
 
 	return err
@@ -47,7 +47,7 @@ func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
 		respondeWithJSON(w, http.StatusBadRequest, "Invalid product ID")
 	}
 
-	var m movie
+	var m Movie
 	m.ID = id
 	if err := m.getProduct(); err != nil {
 		switch err {
@@ -63,7 +63,7 @@ func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateMovieHandler(w http.ResponseWriter, r *http.Request) {
-	var m movie
+	var m Movie
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(&m); err != nil {
@@ -88,7 +88,7 @@ func DeleteMovieHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var m movie
+	var m Movie
 	m.ID = id
 
 	if err := m.deleteProduct(); err != nil {
