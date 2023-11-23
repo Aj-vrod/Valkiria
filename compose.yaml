@@ -1,0 +1,23 @@
+version: "1"
+
+services:
+  postgres:
+    container_name: valkiria-postgres
+    environment:
+      - POSTGRES_PASSWORD=password01
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=valkiria-db
+    ports:
+      - 5432:5432
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+  app:
+    container_name: valkiria-app
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - "8000:3000"
+    depends_on:
+      - postgres

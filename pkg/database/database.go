@@ -17,8 +17,8 @@ func InitDB() error {
 	}
 
 	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
 	user := os.Getenv("DB_USER")
+	port := os.Getenv("DB_PORT")
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 
