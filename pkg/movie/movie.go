@@ -11,7 +11,7 @@ import (
 )
 
 type Movie struct {
-	ID    int    `json:"id"`
+	ID    int    `json:"movie_id"`
 	Name  string `json:"name"`
 	Genre string `json:"genre"`
 }
@@ -25,17 +25,17 @@ func respondeWithJSON(w http.ResponseWriter, code int, m interface{}) {
 }
 
 func (m *Movie) getProduct() error {
-	return database.DB.QueryRow("SELECT name, genre FROM movie WHERE id = $1", m.ID).Scan(&m.Name, &m.Genre)
+	return database.DB.QueryRow("SELECT name, genre FROM movies WHERE movie_id = $1", m.ID).Scan(&m.Name, &m.Genre)
 }
 
 func (m *Movie) createProduct() error {
-	err := database.DB.QueryRow("INSERT INTO movie(name, genre) VALUES($1, $2) RETURNING id", m.Name, m.Genre).Scan(&m.ID)
+	err := database.DB.QueryRow("INSERT INTO movies(name, genre) VALUES($1, $2) RETURNING movie_id", m.Name, m.Genre).Scan(&m.ID)
 
 	return err
 }
 
 func (m *Movie) deleteProduct() error {
-	_, err := database.DB.Exec("DELETE FROM movie WHERE id = $1", m.ID)
+	_, err := database.DB.Exec("DELETE FROM movies WHERE movie_id = $1", m.ID)
 
 	return err
 }

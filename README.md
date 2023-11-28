@@ -12,4 +12,4 @@ in no particular order...
 - [x] Create docker-compose
 - [x] Declare table creation in code
 - [ ] Make valkiria-app wait for valkiria-postgres
-- [ ] Update request handlers to call movies table
+- [x] Update request handlers to call movies table

@@ -19,9 +19,9 @@ func StartServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", root.HomeHandler).Methods("GET")
 	r.HandleFunc("/hello", hello.HelloHandler).Methods("GET")
-	r.HandleFunc("/movie/{id:[0-9]+}", movie.GetMovieHandler).Methods("GET")
-	r.HandleFunc("/movie", movie.CreateMovieHandler).Methods("POST")
-	r.HandleFunc("/movie/{id:[0-9]+}", movie.DeleteMovieHandler).Methods("DELETE")
+	r.HandleFunc("/movies/{id:[0-9]+}", movie.GetMovieHandler).Methods("GET")
+	r.HandleFunc("/movies", movie.CreateMovieHandler).Methods("POST")
+	r.HandleFunc("/movies/{id:[0-9]+}", movie.DeleteMovieHandler).Methods("DELETE")
 
 	err := http.ListenAndServe(":3000", r)
 	if errors.Is(err, http.ErrServerClosed) {
