@@ -1,7 +1,8 @@
-version: "1"
+version: "2.0"
 
 services:
   postgres:
+    image: postgres:16-alpine
     container_name: valkiria-postgres
     environment:
       - POSTGRES_PASSWORD=password01
@@ -9,15 +10,14 @@ services:
       - POSTGRES_DB=valkiria-db
     ports:
       - 5432:5432
-    build:
-      context: .
-      dockerfile: db.Dockerfile
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
   app:
     container_name: valkiria-app
     build:
       context: .
-      dockerfile: app.Dockerfile
+      dockerfile: Dockerfile
     ports:
-      - "8000:3000"
+      - 8000:3000
     depends_on:
       - postgres
