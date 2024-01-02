@@ -13,3 +13,6 @@ in no particular order...
 - [x] Declare table creation in code
 - [ ] Make valkiria-app wait for valkiria-postgres
 - [x] Update request handlers to call movies table
+- [ ] Use helm charts for k8s postgres
+- [ ] Refactor db.Dockerfile in favour of docker-compose
+- [ ] Make list of principles applied in this project and what not
