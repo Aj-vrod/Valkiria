@@ -3,6 +3,8 @@ version: "2.0"
 services:
   postgres:
     image: postgres:16-alpine
+    healthcheck:
+      test: "exit 0"
     container_name: valkiria-postgres
     environment:
       - POSTGRES_PASSWORD=password01
@@ -20,4 +22,5 @@ services:
     ports:
       - 8000:3000
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
