@@ -8,17 +8,13 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/Valkiria/pkg/hello"
 	"github.com/Valkiria/pkg/movie"
-	"github.com/Valkiria/pkg/root"
 )
 
 func StartServer() {
 	fmt.Println("Starting server. Listening on port 3000...")
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", root.HomeHandler).Methods("GET")
-	r.HandleFunc("/hello", hello.HelloHandler).Methods("GET")
 	r.HandleFunc("/movies/{id:[0-9]+}", movie.GetMovieHandler).Methods("GET")
 	r.HandleFunc("/movies", movie.CreateMovieHandler).Methods("POST")
 	r.HandleFunc("/movies/{id:[0-9]+}", movie.DeleteMovieHandler).Methods("DELETE")

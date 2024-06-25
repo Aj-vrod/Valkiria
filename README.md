@@ -14,5 +14,6 @@ in no particular order...
 - [x] Update request handlers to call movies table
 - [x] Refactor db.Dockerfile in favour of docker-compose
 - [x] Make valkiria-app wait for valkiria-postgres
-- [ ] Use helm charts for k8s postgres
-- [ ] Make list of principles applied in this project and what not
+- [ ] Create app as helm3 chart
+- [ ] Move postgres db to AWS RDS
+- [ ] Implement terraform to manage AWS resource
