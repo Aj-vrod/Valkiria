@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	"github.com/Valgard/godotenv"
@@ -16,17 +15,13 @@ func InitDB() error {
 		return err
 	}
 
-	host := os.Getenv("DB_HOST")
-	user := os.Getenv("DB_USER")
-	port := os.Getenv("DB_PORT")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
+	dns := os.Getenv("DB_DNS")
+	if dns == "" {
+		panic("Missing env variable DB_DNS")
+	}
 
 	var err error
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	DB, err = sql.Open("postgres", psqlInfo)
+	DB, err = sql.Open("postgres", dns)
 	if err != nil {
 		return err
 	}
